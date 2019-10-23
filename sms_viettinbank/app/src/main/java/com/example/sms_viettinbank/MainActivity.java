@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -48,6 +49,17 @@ public class MainActivity extends AppCompatActivity {
 
         return cm.getActiveNetworkInfo() != null;
     }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,14 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance().getReference();
         Intent intent = new Intent(getApplicationContext(), SmsServices.class);
-        try{
-            stopService(intent);
+//        try{
+//            stopService(intent);
+//        }
+//        catch (Exception e){
+//
+//        }
+        if(!isMyServiceRunning(SmsServices.class)){
+            Toasts("start service");
+            startService(intent);
         }
-        catch (Exception e){
 
-        }
-
-        startService(intent);
 
 
         lvSms = (ListView) findViewById(R.id.lvSms);

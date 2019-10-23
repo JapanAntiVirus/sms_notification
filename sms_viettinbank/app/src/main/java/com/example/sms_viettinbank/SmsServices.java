@@ -23,14 +23,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 public class SmsServices extends Service {
-    DatabaseReference database;
+    private DatabaseReference database;
 
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-    }
-    public void showNotification(String body) {
+    private void showNotification(String body) {
         String title = "Vietinbank";
         Context context = getApplicationContext();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -62,7 +57,7 @@ public class SmsServices extends Service {
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
-    ChildEventListener childListener = new ChildEventListener() {
+    private ChildEventListener childListener = new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -70,7 +65,6 @@ public class SmsServices extends Service {
                 vibrator.vibrate(500); // for 500 ms
             }
 //                Toast.makeText(getApplicationContext(), "add child", Toast.LENGTH_SHORT).show();
-//                buildNotification(dataSnapshot.getValue(String.class));
             showNotification(dataSnapshot.getValue(String.class));
         }
 
@@ -96,7 +90,8 @@ public class SmsServices extends Service {
     };
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onCreate() {
+        super.onCreate();
         database = FirebaseDatabase.getInstance().getReference();
         try{
             database.child("sms").removeEventListener(childListener);
@@ -106,6 +101,19 @@ public class SmsServices extends Service {
         }
 
         database.child("sms").addChildEventListener(childListener);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+//        database = FirebaseDatabase.getInstance().getReference();
+//        try{
+//            database.child("sms").removeEventListener(childListener);
+//        }
+//        catch (Exception e){
+//
+//        }
+//
+//        database.child("sms").addChildEventListener(childListener);
 //        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
         return START_STICKY;
     }
@@ -113,6 +121,10 @@ public class SmsServices extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator.hasVibrator()) {
+            vibrator.vibrate(500); // for 500 ms
+        }
 //        database.child("sms").removeEventListener(childListener);
 //        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }
@@ -123,5 +135,5 @@ public class SmsServices extends Service {
         return null;
     }
 
-    
+
 }

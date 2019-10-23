@@ -27,7 +27,7 @@ public class SmsReciever extends BroadcastReceiver {
                 if(smsMessage.getDisplayOriginatingAddress().equals("VietinBank")){
                     String sms = smsMessage.getMessageBody();
                     try{
-                        sms = new SimpleDateFormat("dd-MM-yyyy hh:mm").format(new Date()) + "\n" + sms;
+                        sms = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date()) + "\n" + sms;
                         database.child("sms").child(getTime()).setValue(sms);
                     }
                     catch (Exception e){
