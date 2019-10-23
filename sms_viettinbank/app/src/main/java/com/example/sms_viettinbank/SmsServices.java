@@ -8,6 +8,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.widget.Toast;
@@ -24,7 +25,7 @@ import androidx.core.app.NotificationCompat;
 
 public class SmsServices extends Service {
     private DatabaseReference database;
-
+    private Sqlite sql;
     private void showNotification(String body) {
         String title = "Vietinbank";
         Context context = getApplicationContext();
@@ -57,50 +58,64 @@ public class SmsServices extends Service {
         notificationManager.notify(notificationId, mBuilder.build());
     }
 
-    private ChildEventListener childListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            if (vibrator.hasVibrator()) {
-                vibrator.vibrate(500); // for 500 ms
-            }
-//                Toast.makeText(getApplicationContext(), "add child", Toast.LENGTH_SHORT).show();
-            showNotification(dataSnapshot.getValue(String.class));
-        }
-
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
+    private ChildEventListener childListener;
 
     @Override
     public void onCreate() {
         super.onCreate();
         database = FirebaseDatabase.getInstance().getReference();
+        sql = new Sqlite(SmsServices.this,"sms", null, 1);
+        sql.query("CREATE TABLE IF NOT EXISTS vietinbank ( content text );");
         try{
             database.child("sms").removeEventListener(childListener);
         }
         catch (Exception e){
 
         }
+        childListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String sms = dataSnapshot.getValue(String.class);
+                Cursor c = sql.select("SELECT content FROM vietinbank");
+                while(c.moveToNext()){
+                    String lastSms = c.getString(0);
+                    if(lastSms.equals(sms)){
+                        return;
+                    }
+                }
+                sql.query("INSERT INTO vietinbank VALUES ('" + sms + "') ");
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                if (vibrator.hasVibrator()) {
+                    vibrator.vibrate(500); // for 500 ms
+                }
+//                Toast.makeText(getApplicationContext(), "add child", Toast.LENGTH_SHORT).show();
+                showNotification(sms);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
 
         database.child("sms").addChildEventListener(childListener);
+//        Toast.makeText(this, "on create", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -121,10 +136,6 @@ public class SmsServices extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibrator.hasVibrator()) {
-            vibrator.vibrate(500); // for 500 ms
-        }
 //        database.child("sms").removeEventListener(childListener);
 //        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }

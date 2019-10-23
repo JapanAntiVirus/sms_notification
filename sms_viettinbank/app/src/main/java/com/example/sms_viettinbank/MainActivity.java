@@ -73,15 +73,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         database = FirebaseDatabase.getInstance().getReference();
-        Intent intent = new Intent(getApplicationContext(), SmsServices.class);
-//        try{
-//            stopService(intent);
-//        }
-//        catch (Exception e){
-//
-//        }
         if(!isMyServiceRunning(SmsServices.class)){
             Toasts("start service");
+            Intent intent = new Intent(getApplicationContext(), SmsServices.class);
             startService(intent);
         }
 
