@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1035289075793",
+    "firebase_url": "https://smsviettinbank.firebaseio.com",
+    "project_id": "smsviettinbank",
+    "storage_bucket": "smsviettinbank.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035289075793:android:a5f8456635a856fb581870",
+        "android_client_info": {
+          "package_name": "com.example.sms_viettinbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035289075793-k9p5012s8e8immo1c4lip1so5kcqjh23.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sms_viettinbank",
+            "certificate_hash": "417b631eee012e52238242d24237c4d157024d9a"
+          }
+        },
+        {
+          "client_id": "1035289075793-g7en2l42ucgdnmdls5l1cc46ptvt2r6e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTdyY_jdWHJHKZPxby2cJer4kpHYqlQ1g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035289075793-g7en2l42ucgdnmdls5l1cc46ptvt2r6e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
